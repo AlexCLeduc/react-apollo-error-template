@@ -1,48 +1,48 @@
 import React, { Component } from "react";
-import { graphql } from "react-apollo";
+import { graphql, compose } from "react-apollo";
 import gql from "graphql-tag";
 
-class App extends Component {
-  render() {
-    const { data: { loading, people } } = this.props;
-    return (
-      <main>
-        <header>
-          <h1>Apollo Client Error Template</h1>
-          <p>
-            This is a template that you can use to demonstrate an error in
-            Apollo Client. Edit the source code and watch your browser window
-            reload with the changes.
-          </p>
-          <p>
-            The code which renders this component lives in{" "}
-            <code>./src/App.js</code>.
-          </p>
-          <p>
-            The GraphQL schema is in <code>./src/graphql/schema</code>.
-            Currently the schema just serves a list of people with names and
-            ids.
-          </p>
-        </header>
-        {loading ? (
-          <p>Loading…</p>
-        ) : (
-          <ul>
-            {people.map(person => <li key={person.id}>{person.name}</li>)}
-          </ul>
-        )}
-      </main>
-    );
+
+const App = ({ 
+  first_query,
+  second_query,
+}) => {
+
+  if(first_query.loading || second_query.loading){
+    return <div> Loading ... </div>;
+  }
+
+
+  if(first_query.people && !second_query.people){
+    debugger;
+    return <div> Bug is happenning </div>
+  }
+
+  return <div> Bug didn't happen </div>;
+
+};
+
+
+const first_query = gql`
+  query {
+    people {
+      name
+    }
+  }
+`;
+const first_dec = graphql(first_query, { name: "first_query" })
+
+const second_query =  gql`
+query {
+  people {
+    id
+    # try changing the field to 'not_called_id' and see the bug dissapear
+    #not_called_id
   }
 }
+`;
 
-export default graphql(
-  gql`
-    query ErrorTemplate {
-      people {
-        id
-        name
-      }
-    }
-  `
-)(App);
+const second_dec = graphql(second_query, { name: "second_query" });
+
+
+export default compose(first_dec, second_dec)(App);

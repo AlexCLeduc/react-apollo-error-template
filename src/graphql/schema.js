@@ -10,6 +10,8 @@ const PersonType = new GraphQLObjectType({
   name: 'Person',
   fields: {
     id: { type: GraphQLID },
+    //Bug doesn't happen when you use fields that aren't called 'id'
+    not_called_id: { type: GraphQLID },
     name: { type: GraphQLString },
   },
 });
